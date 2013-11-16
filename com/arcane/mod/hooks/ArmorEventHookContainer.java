@@ -1,5 +1,7 @@
 package com.arcane.mod.hooks;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -15,11 +17,17 @@ public class ArmorEventHookContainer
 	boolean isJumpBoost = false;
 	boolean isHeavyFooted = false;
 	boolean isRegen = false;
+	boolean isSprinter = false;
+	boolean isSpeed = false;
 
 	// Inegers, ya idiots
 	int heavyFootedAmount;
 	int jumpBoostAmount;
 	int regenAmount;
+	int sprinterAmount;
+	int speedAmount;
+
+	// Misc.
 	int healingTimer;
 
 	@ForgeSubscribe
@@ -47,39 +55,82 @@ public class ArmorEventHookContainer
 			{
 				isHeavyFooted = true;
 			}
-			
+
 			this.regenAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.armorRegen.effectId, stack_feet);
-			
+
 			if(regenAmount > 0)
 			{
 				isRegen = true;
 			}
+
+			this.sprinterAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.sprinter.effectId, stack_legs);
+
+			if(sprinterAmount > 0)
+			{
+				isSprinter = true;
+			}
+
+			this.speedAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.speedBoost.effectId, stack_feet);
+
+			if(speedAmount > 0)
+			{
+				isSpeed = true;
+			}
 		}
 	}
-	
+
 	@ForgeSubscribe
 	public void applyEffects(LivingEvent.LivingUpdateEvent event)
 	{
 		if(event.entityLiving instanceof EntityPlayer)
 		{
 			EntityPlayer player = (EntityPlayer) event.entityLiving;
-		
+
 			if(isRegen = true)
 			{
-				int i = 20 * ((this.regenAmount - 1) * 3);
-                int j = 440 - i;
-                int k = healingTimer % j;
-                   
-                if(k == 0 && player.getHealth() < player.getMaxHealth())
-                {
-                    player.heal(1);
-                }
-                if(healingTimer > 44000)
-                {
-                    healingTimer = 0;
-                }
-                
-                healingTimer++;
+				int i = 20 * ((this.regenAmount - 1) * 3); 
+				int j = 440 - i;
+				int k = healingTimer % j;
+
+				if(k == 0 && player.getHealth() < player.getMaxHealth())
+				{
+					player.heal(1);
+				}
+				if(healingTimer > 44000)
+				{
+					healingTimer = 0;
+				}
+
+				healingTimer++;
+			}
+			if(isSprinter = true && player.isSprinting() == true)
+			{
+				player.getFoodStats().addExhaustion(-0.2F * (float) sprinterAmount); // Halves the amount of exhaustion when sprinting
+			}
+			if(isSpeed = true)
+			{
+				if(!player.isSneaking() && player.onGround)
+				{
+					if(Keyboard.isKeyDown(87) || Keyboard.isKeyDown(65) || Keyboard.isKeyDown(83) || Keyboard.isKeyDown(68))
+					{
+						double amount;
+						System.out.println("Woof");
+
+						if(speedAmount == 1)
+						{
+							amount = 1.1;
+						} else if(speedAmount == 2)
+						{
+							amount = 1.25;
+						} else
+						{
+							amount = 1.45;
+						}
+
+						player.motionX *= amount;				
+						player.motionZ *= amount;
+					}
+				}
 			}
 		}
 	}
