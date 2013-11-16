@@ -7,6 +7,7 @@ import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.arcane.mod.common.CommonProxy;
+import com.arcane.mod.enchantments.EnchantmentArmorRegen;
 import com.arcane.mod.enchantments.EnchantmentArrowExplosive;
 import com.arcane.mod.enchantments.EnchantmentArrowLightning;
 import com.arcane.mod.enchantments.EnchantmentArrowSeeking;
@@ -47,6 +48,7 @@ public class ArcaneEnchantments
 	// Armor Enchantments
 	public static final Enchantment jumpBoost = new EnchantmentJumpBoost(104, 3);
 	public static final Enchantment leadFooted = new EnchantmentLeadFooted(95, 5);
+	public static final Enchantment armorRegen = new EnchantmentArmorRegen(102, 1);
 	
 	/*
 	public static final Enchantment allBound;
@@ -74,7 +76,6 @@ public class ArcaneEnchantments
 	public static final Enchantment arrowCritical;
 	public static final Enchantment hoeSeeder;
 	public static final Enchantment platePoisonResistance;
-	public static final Enchantment armorHealthRegen;
 	*/
 
 	@SidedProxy(serverSide = "com.arcane.mod.common.CommonProxy", clientSide = "com.arcane.mod.client.ClientProxy")
