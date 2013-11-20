@@ -4,15 +4,15 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.util.StatCollector;
 
-public class EnchantmentJumpBoost extends Enchantment
+public class EnchantmentVampirism extends Enchantment
 {
-	public EnchantmentJumpBoost(int id, int rarity)
+	public EnchantmentVampirism(int id, int rarity)
 	{
 		super(id, rarity, EnumEnchantmentType.armor_feet);
-		this.setName("jumpBoost");
+		this.setName("vampirism");
 	}
 
-	public EnchantmentJumpBoost(int id, int rarity, EnumEnchantmentType type)
+	public EnchantmentVampirism(int id, int rarity, EnumEnchantmentType type)
 	{
 		super(id, rarity, type);
 	}
@@ -20,37 +20,38 @@ public class EnchantmentJumpBoost extends Enchantment
 	@Override
 	public String getTranslatedName(int i)
 	{
-		String enchantmentName = "Jump Boost";
+		String enchantmentName = "Vampirism";
 		return enchantmentName + " " + StatCollector.translateToLocal("enchantment.level." + i);
 	}
 
 	@Override
 	public int getMinEnchantability(int i)
 	{
-		return 20;
+		return 15;
 	}
 
 	@Override
 	public int getMaxEnchantability(int i)
 	{
-		return i + 20;
+		return this.getMinEnchantability(i) + 30;
 	}
 
 	@Override
 	public int getMaxLevel()
 	{
-		return 2;
+		return 1;
 	}
 
+	/*
 	@Override 
 	public boolean canApplyTogether(Enchantment enchantment)
-	{
-		if(enchantment instanceof EnchantmentLeadFooted)
-		{
-			return false;
-		} else
-		{
-			return super.canApplyTogether(enchantment);
-		}
-	}
+    {
+        if(enchantment instanceof EnchantmentBound)
+        {
+            return false;
+        } else
+        {
+            return super.canApplyTogether(enchantment);
+        }
+    }*/
 }

@@ -11,6 +11,7 @@ import com.arcane.mod.enchantments.EnchantmentArmorRegen;
 import com.arcane.mod.enchantments.EnchantmentArrowExplosive;
 import com.arcane.mod.enchantments.EnchantmentArrowLightning;
 import com.arcane.mod.enchantments.EnchantmentArrowSeeking;
+import com.arcane.mod.enchantments.EnchantmentBound;
 import com.arcane.mod.enchantments.EnchantmentCritical;
 import com.arcane.mod.enchantments.EnchantmentFlameTouch;
 import com.arcane.mod.enchantments.EnchantmentJumpBoost;
@@ -18,6 +19,7 @@ import com.arcane.mod.enchantments.EnchantmentLeadFooted;
 import com.arcane.mod.enchantments.EnchantmentPoison;
 import com.arcane.mod.enchantments.EnchantmentSpeedBoost;
 import com.arcane.mod.enchantments.EnchantmentSprinter;
+import com.arcane.mod.enchantments.EnchantmentVampirism;
 import com.arcane.mod.hooks.ArmorEventHookContainer;
 import com.arcane.mod.hooks.ArrowEventHookContainer;
 import com.arcane.mod.hooks.ToolEventHookContainer;
@@ -38,6 +40,8 @@ public class ArcaneEnchantments
 	// TODO: I need to completely rework the min/max enchant system...I done goofed
 	// The first integer in the statement is the Enchantment ID, and the second is the rarity
 	public static final Enchantment flameTouch = new EnchantmentFlameTouch(103, 2);
+	public static final Enchantment vampirism = new EnchantmentVampirism(78, 3);
+	public static final Enchantment allBound = new EnchantmentBound(70, 15);
 	
 	// Arrow Enchantments
 	public static final Enchantment arrowSeeking = new EnchantmentArrowSeeking(74, 1);
@@ -59,9 +63,7 @@ public class ArcaneEnchantments
 	public static final Enchantment allBound;
 	public static final Enchantment arrowHoly;
 	public static final Enchantment arrowCripple;
-	public static final Enchantment hoeHarvester;
 	public static final Enchantment swordCleverness;
-	public static final Enchantment bootsSpeed;
 	public static final Enchantment swordPoison;
 	public static final Enchantment swordGuard;
 	public static final Enchantment arrowLooting;

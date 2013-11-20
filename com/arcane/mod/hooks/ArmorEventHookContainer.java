@@ -1,13 +1,15 @@
 package com.arcane.mod.hooks;
 
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+
+import org.lwjgl.input.Keyboard;
 
 import com.arcane.mod.ArcaneEnchantments;
 
@@ -19,6 +21,7 @@ public class ArmorEventHookContainer
 	boolean isRegen = false;
 	boolean isSprinter = false;
 	boolean isSpeed = false;
+	boolean isBound = false;
 
 	// Inegers, ya idiots
 	int heavyFootedAmount;
@@ -26,9 +29,12 @@ public class ArmorEventHookContainer
 	int regenAmount;
 	int sprinterAmount;
 	int speedAmount;
+	int boundAmount;
 
 	// Misc.
 	int healingTimer;
+	boolean respawned;
+	ItemStack inventory[];
 
 	@ForgeSubscribe
 	public void livingUpdateEvent(LivingEvent.LivingUpdateEvent event)
@@ -42,39 +48,78 @@ public class ArmorEventHookContainer
 			ItemStack stack_head = player.inventory.armorItemInSlot(3);
 			ItemStack[] stack_total = player.inventory.armorInventory;
 
-			this.jumpBoostAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.jumpBoost.effectId, stack_feet);
+			jumpBoostAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.jumpBoost.effectId, stack_feet);
 
 			if(jumpBoostAmount > 0)
 			{
 				isJumpBoost = true;
 			}
 
-			this.heavyFootedAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.jumpBoost.effectId, stack_feet);
+			heavyFootedAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.jumpBoost.effectId, stack_feet);
 
 			if(heavyFootedAmount > 0)
 			{
 				isHeavyFooted = true;
 			}
 
-			this.regenAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.armorRegen.effectId, stack_feet);
+			regenAmount = EnchantmentHelper.getMaxEnchantmentLevel(ArcaneEnchantments.armorRegen.effectId, stack_total);
 
 			if(regenAmount > 0)
 			{
 				isRegen = true;
 			}
 
-			this.sprinterAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.sprinter.effectId, stack_legs);
+			sprinterAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.sprinter.effectId, stack_legs);
 
 			if(sprinterAmount > 0)
 			{
 				isSprinter = true;
 			}
 
-			this.speedAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.speedBoost.effectId, stack_feet);
+			speedAmount = EnchantmentHelper.getEnchantmentLevel(ArcaneEnchantments.speedBoost.effectId, stack_feet);
 
 			if(speedAmount > 0)
 			{
 				isSpeed = true;
+			}
+
+			boundAmount = EnchantmentHelper.getMaxEnchantmentLevel(ArcaneEnchantments.allBound.effectId, stack_total);
+
+			if(boundAmount > 0 && !(player.worldObj.getWorldInfo().isHardcoreModeEnabled()))
+			{
+				isBound = true;
+			}
+		}
+	}
+
+	@ForgeSubscribe
+	public void onLivingDeath(LivingDeathEvent event)
+	{
+		if(event.entityLiving instanceof EntityPlayer)
+		{
+			EntityPlayer player = (EntityPlayer) event.entityLiving;
+			inventory = new ItemStack[player.inventory.getSizeInventory()];;
+
+			for(int i = 0; i < player.inventory.getSizeInventory(); i++)
+			{
+				int k = boundAmount;
+				
+				if(k == 4)
+				{
+					inventory[i] = player.inventory.getStackInSlot(i);
+					continue;
+				}
+				if(k > 0 && player.worldObj.rand.nextInt(k + 1) > 0)
+				{
+					inventory[i] = player.inventory.getStackInSlot(i);
+				}
+			}
+			for(int j = 0; j < inventory.length; j++)
+			{
+				if(inventory[j] != null)
+				{
+					player.inventory.setInventorySlotContents(j, null);
+				}
 			}
 		}
 	}
@@ -132,8 +177,44 @@ public class ArmorEventHookContainer
 					}
 				}
 			}
+
+			inventory = new ItemStack[player.inventory.getSizeInventory()];
+
+			if(respawned && inventory != null && player.getHealth() > 0)
+			{
+				respawned = false;
+
+				for(int k = 0; k < inventory.length; k++)
+				{
+					if(inventory[k] != null)
+					{
+						player.inventory.setInventorySlotContents(k, inventory[k]);
+					}
+				}
+			}		
 		}
 	}
+	
+	@ForgeSubscribe
+	public void afterDeathUpdate(LivingSpawnEvent event)
+    {
+        if(event.entityLiving instanceof EntityPlayer)
+        {
+        	EntityPlayer player = (EntityPlayer) event.entityLiving;
+        	inventory = new ItemStack[player.inventory.getSizeInventory()];
+        	
+            respawned = true;
+            
+            if(inventory != null)
+            {
+                for(int i = 0; i < inventory.length; i++)
+                {
+                    player.inventory.setInventorySlotContents(i, inventory[i]);
+                }
+            }
+        }
+    }
+
 
 	@ForgeSubscribe
 	public void playerJumping(LivingJumpEvent event)
